@@ -1,2 +1,2 @@
 # Major-Project
-Enhancing Job Recommendations on LinkedIn using Data Analysis and Machine Learning
+# Enhancing Job Recommendations on LinkedIn using Data Analysis and Machine Learning
