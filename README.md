@@ -144,7 +144,18 @@ import numpy as np
 import pandas as pd
 users=pd.read_csv('user_profiles.csv')
 jobs=pd.read_csv('job_postings.csv')
+
+
+
+
 ![image](https://github.com/user-attachments/assets/26df87f3-c85a-476f-ba98-e658a037f238)
+
+
+
+
+
+![image](https://github.com/user-attachments/assets/e55933a9-2e2d-4315-a09d-e8719d219187)
+
 
 
 
