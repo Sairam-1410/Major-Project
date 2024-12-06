@@ -103,60 +103,213 @@ recommendations on LinkedIn through data analysis and machine learning. Their ab
 importance makes them a valuable asset in LinkedIn's mission to connect professionals with relevant
 and meaningful career opportunities.
 # SOURCE CODE
-from flask import Flask, render_template, request
-app = Flask( name )
-@app.route('/')
-def index():
-return render_template('index.html')
-@app.route('/predict', methods=['POST'])
-def predict():
-skills = request.form['skills']
-experience = int(request.form['experience'])
-#Perform prediction here based on the input
-prediction = predict_job_recommendations_svm(skills, experience)
-if prediction == 1:
-result = "The user is likely to apply for a job."
-else:
-result = "The user is not likely to apply for a job."
-return render_template('index.html', result=result)
-def predict_job_recommendations_svm(user_skills, user_experience_years):
-#This function should contain the prediction logic using the trained SVM classifier
-#You can implement the logic here or call the function from your previous code
-#For demonstration purposes, return a dummy prediction
-if 'Python' in user_skills:
-return 1
-else:
-return 0
-#Serve favicon.ico file
-@app.route('/favicon.ico')
-def favicon():
-return app.send_static_file('favicon.ico')
-if name == ' main ':
-app.run(debug=True)
+from flask import Flask, render_template, request  <br>
+app = Flask( name )  <br>
+@app.route('/')   <br>
+def index():  <br>
+return render_template('index.html')  <br>
+@app.route('/predict', methods=['POST'])  <br>
+def predict():  <br>
+skills = request.form['skills'] <br>
+experience = int(request.form['experience']) <br>
+#Perform prediction here based on the input   <br>
+prediction = predict_job_recommendations_svm(skills, experience) <br>
+if prediction == 1: <br>
+result = "The user is likely to apply for a job." <br> 
+else:<br>
+result = "The user is not likely to apply for a job."<br>
+return render_template('index.html', result=result)<br>
+def predict_job_recommendations_svm(user_skills, user_experience_years<br>
+#This function should contain the prediction logic using the trained SVM classifier<br>
+#You can implement the logic here or call the function from your previous code<br>
+#For demonstration purposes, return a dummy prediction<br>
+if 'Python' in user_skills:<br>
+return 1<br>
+else:<br>
+return 0<br>
+#Serve favicon.ico file<br>
+@app.route('/favicon.ico')<br>
+def favicon():<br>
+return app.send_static_file('favicon.ico')<br>
+if name == ' main ':<br>
+app.run(debug=True)<br> 
+
 # Logical Code
-Libraries
-import pandas as pd
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import TruncatedSVD
-import numpy as np
-import pandas as pd
-users=pd.read_csv('user_profiles.csv')
-jobs=pd.read_csv('job_postings.csv')
+Libraries <br>
+import pandas as pd <br>
+import numpy as np <br>
+from sklearn.metrics.pairwise import cosine_similarity <br>
+from sklearn.feature_extraction.text import TfidfVectorizer <br>
+from sklearn.decomposition import TruncatedSVD <br>
 
+Data set
+import numpy as np<br>
+import pandas as pd <br>
+users=pd.read_csv('user_profiles.csv')<br>
+jobs=pd.read_csv('job_postings.csv') <br> 
 
-
-
-![image](https://github.com/user-attachments/assets/26df87f3-c85a-476f-ba98-e658a037f238)
-
-
-
-
-
-![image](https://github.com/user-attachments/assets/e55933a9-2e2d-4315-a09d-e8719d219187)
+![image](https://github.com/user-attachments/assets/b33dfed3-68dc-429e-b241-79768ce6d63c)
 
 
 
 
 
+
+
+
+
+![image](https://github.com/user-attachments/assets/3ce00fd4-9fcd-4b21-a5b7-86937219d185)
+
+
+
+
+# Data Preprocessing
+
+#Importing necessary libraries <br>
+import pandas as pd <br>
+from sklearn.feature_extraction.text <br>
+import TfidfVectorizer <br>
+from sklearn.preprocessing <br>
+import StandardScaler <br>
+#Read user profiles and job postings data from CSV files <br>
+users = pd.read_csv('user_profiles.csv') <br>
+jobs = pd.read_csv('job_postings.csv') <br>
+#Data preprocessing for user profiles <br>
+#Handling missing values <br>
+users.fillna(value={'experience_years': users['experience_years'].median()}, inplace=True) <br>
+#Text data processing - skills column <br>
+users['skills'] = users['skills'].str.lower().str.replace(r'[^a-zA-Z\s]', '') <br>
+users['skills'] = users['skills'].str.split(',') <br>
+#Feature extraction - TF-IDF for skills <br>
+tfidf_skills = TfidfVectorizer() <br>
+skills_tfidf = tfidf_skills.fit_transform(users['skills'].apply(lambda x: ' '.join(x))) <br>
+#Normalization/Scaling - experience_years <br>
+scaler = StandardScaler() <br>
+users['experience_years'] = scaler.fit_transform(users[['experience_years']]) <br>
+#Data preprocessing for job postings <br>
+#Handling missing values <br>
+jobs.fillna(value={'experience_required': jobs['experience_required'].median()}, inplace=True) <br>
+#Text data processing - skills_required column <br>
+jobs['skills_required'] = jobs['skills_required'].str.lower().str.replace(r'[^a-zA-Z\s]', '') <br>
+jobs['skills_required'] = jobs['skills_required'].str.split(',') <br>
+#Feature extraction - TF-IDF for skills_required <br>
+skills_required_tfidf = tfidf_skills.transform(jobs['skills_required'].apply(lambda x: ' '.join(x))) <br>
+#Normalization/Scaling - experience_required <br>
+jobs_scaler = StandardScaler() <br>
+jobs['experience_required'] = jobs_scaler.fit_transform(jobs[['experience_required']]) <br>
+#Display the preprocessed data <br>
+print("Preprocessed User Profiles:") <br>
+print(users.head()) <br>
+print("\nPreprocessed Job Postings:") <br>
+print(jobs.head()) <br>
+#Check For Duplicates   <br>
+#Convert list of skills to tuple of skills for each user profile <br>
+users['skills_tuple'] = users['skills'].apply(tuple) <br>
+#Check for duplicates in user profiles based on the tuple of skills <br>
+duplicate_users = users[users.duplicated(subset='skills_tuple')] <br>
+if not duplicate_users.empty:<br>
+print("Duplicate user profiles found:")<br>
+print(duplicate_users) <br>
+else: <br>
+print("No duplicate user profiles found.") <br>
+#Convert list of skills_required to tuple of skills for each job posting <br>
+jobs['skills_required_tuple'] = jobs['skills_required'].apply(tuple) <br>
+#Check for duplicates in job postings based on the tuple of skills_required <br>
+duplicate_jobs = jobs[jobs.duplicated(subset='skills_required_tuple')] <br>
+if not duplicate_jobs.empty: <br>
+print("Duplicate job postings found:") <br>
+print(duplicate_jobs) <br>
+else:<br>
+print("No duplicate job postings found.")<br>
+
+# EDA
+import matplotlib.pyplot as plt <br>
+#EDA for User Profiles<br>
+#Summary Statistics<br>
+print("Summary Statistics for User Profiles:")<br>
+print(users.describe())<br>
+#Distribution of Numerical Feature (experience_years)<br>
+plt.figure(figsize=(8, 6))<br>
+plt.hist(users['experience_years'], bins=20, color='skyblue', edgecolor='black')<br>
+plt.title('Distribution of Experience Years')<br>
+plt.xlabel('Experience Years')<br>
+plt.ylabel('Frequency')<br>
+plt.grid(True)<br>
+plt.show()<br>
+#Analysis of Categorical Feature (skills)<br>
+skills_count = users['skills'].explode().value_counts()<br>
+top_skills = skills_count.head(10)<br>
+plt.figure(figsize=(10, 6))<br>
+top_skills.plot(kind='bar', color='skyblue')<br>
+plt.title('Top 10 Skills')<br>
+plt.xlabel('Skill')<br>
+plt.ylabel('Frequency')<br>
+
+
+
+
+
+
+
+
+
+
+![image](https://github.com/user-attachments/assets/847bf052-8076-4d6b-88cb-83f318acf2ff)
+
+
+
+
+
+
+
+
+
+
+
+
+
+![image](https://github.com/user-attachments/assets/dafa07a5-3d84-4244-9a7b-0baa029c467b)
+
+
+
+
+
+
+
+
+
+
+
+# Result 
+
+
+
+
+![image](https://github.com/user-attachments/assets/23c29572-63f8-4c47-8713-af7a759f7dc0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+![image](https://github.com/user-attachments/assets/e77d7398-f22d-4e98-866e-6ed9a10b0f48)
+
+
+
+
+
+
+
+
+
+
+
+
+![image](https://github.com/user-attachments/assets/897de8da-14d6-400b-ace5-4454837851ca)
